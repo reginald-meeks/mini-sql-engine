@@ -38,11 +38,7 @@ public class Main {
         Executor executor = new Executor(database);
         Planner planner = new Planner(executor);
 
-        String sqlQuery = "SELECT Name, Age FROM users WHERE Age > 20";
-        ArrayList<Row> results = planner.plan(parser.parse(sqlQuery));
-        for (Row row : results) {
-            System.out.print(row.getValue("NAME") + " ");
-            System.out.println(row.getValue("AGE"));
-        }
+        Repl repl = new Repl(database);
+        repl.start();
     }
 }

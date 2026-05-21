@@ -1,5 +1,6 @@
 package parser;
 
 public enum QueryType {
-    SELECT
+    SELECT,
+    INSERT
 }

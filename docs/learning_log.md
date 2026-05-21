@@ -7,7 +7,7 @@ Day 3: executor implementation
 Day 4: implement planner class to connect parser and executor and main class to run sample query
 Day 5: implement hash index and tests for executor and parser
 Day 6: implement B+Tree class with insert, search, and rangeSearch
-Day 7:
+Day 7: implement REPL and INSERT
 Day 8:
 Day 9:
 Day 10:
@@ -165,7 +165,13 @@ from the leaf linked list — no backtracking needed once the start is found.
 
 ## Day 7
 ### What I built
-
+Added INSERT support to the engine. Updated QueryType enum with INSERT, updated
+Parser to handle INSERT INTO table VALUES (...) syntax with parenthesis and comma
+stripping, added values field to Query class, and updated Executor to handle INSERT
+by matching values to columns by index and adding a new Row to the table. Built a
+REPL (Read-Eval-Print Loop) in Repl.java that accepts SQL input from the terminal,
+parses and executes it, and prints results in a loop until EXIT is typed. Wired
+REPL into Main.java replacing the hardcoded query.
 
 ### What confused me
 - 
@@ -174,7 +180,8 @@ from the leaf linked list — no backtracking needed once the start is found.
 
 
 ### Performance notes
-
+N/A — INSERT adds O(1) to the end of the rows ArrayList. REPL performance
+is I/O bound. Formal benchmarking in Day 8.
 
 
 ---

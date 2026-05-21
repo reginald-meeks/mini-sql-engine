@@ -10,6 +10,8 @@ public class Query {
     private String conditionColumn;
     private String conditionOperator;
     private String conditionValue;
+    private ArrayList<String> values;
+
 
     public Query(QueryType type, ArrayList<String> selectedColumns, String tableName) {
         this.type = type;
@@ -52,5 +54,13 @@ public class Query {
 
     public String getConditionValue() {
         return conditionValue;
+    }
+
+    public ArrayList<String> getValues() {
+        return values;
+    }
+
+    public void setValues(ArrayList<String> values) {
+        this.values = values;
     }
 }

@@ -17,4 +17,9 @@ public class Row {
     public Object getValue(String columnName) {
         return values.get(columnName);
     }
+
+    public Map<String, Object> getValues() {
+        return values;
+    }
 }
+

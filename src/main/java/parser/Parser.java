@@ -1,5 +1,6 @@
 package parser;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Parser {
@@ -32,6 +33,19 @@ public class Parser {
            query.setConditionColumn(column);
            query.setConditionOperator(operator);
            query.setConditionValue(value);
+           return query;
+
+       } else if (tokens[0].equals("INSERT")) {
+           String tableName = null;
+           ArrayList<String> values = new ArrayList<>();
+           tableName = tokens[2];
+           for (int j = 4; j < tokens.length; j++) {
+               String clean = tokens[j].replace("(", "").replace(")",
+                       "").replace(",", "");
+               values.add(clean);
+           }
+           Query query = new Query(QueryType.INSERT, null, tableName);
+           query.setValues(values);
            return query;
        }
        return null;
