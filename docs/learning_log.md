@@ -8,9 +8,8 @@ Day 4: implement planner class to connect parser and executor and main class to 
 Day 5: implement hash index and tests for executor and parser
 Day 6: implement B+Tree class with insert, search, and rangeSearch
 Day 7: implement REPL and INSERT
-Day 8:
+Day 8: add benchmarks comparing full scan, hash index, and B+ tree
 Day 9:
-Day 10:
 
 
 
@@ -189,7 +188,11 @@ is I/O bound. Formal benchmarking in Day 8.
 
 ## Day 8
 ### What I built
-
+Built a Benchmark class with 5 benchmark methods comparing full table scan vs
+hash index vs B+ tree on 10,000 rows. Measured exact match lookup (AGE = 50)
+and range query (AGE 20-50). Results: hash index is ~830x faster than full scan
+for exact matches, B+ tree is ~273x faster for range queries. Numbers will be
+added to README.
 
 ### What confused me
 - 
@@ -198,7 +201,9 @@ is I/O bound. Formal benchmarking in Day 8.
 
 
 ### Performance notes
-
+Exact match - Full scan: ~2,075,959ns | Hash index: ~2,500ns | B+ tree: ~4,667ns
+Range query - Full scan: ~888,333ns   | B+ tree range: ~3,250ns
+All tests on 10,000 rows, Java nanoTime measurements.
 
 
 ---
@@ -220,19 +225,3 @@ is I/O bound. Formal benchmarking in Day 8.
 
 ---
 
-
-## Day 10
-### What I built
-
-
-### What confused me
-- 
-
-### How I resolved it
-
-
-### Performance notes
-
-
-
----

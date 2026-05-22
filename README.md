@@ -32,7 +32,10 @@ src/main/java/
 ---
 
 ## Benchmark Results
-
+| Operation          | Full Scan    | Index Lookup  | Speedup  |
+|--------------------|--------------|---------------|----------|
+| Exact match (=)    | ~2,075,959ns | ~2,500ns      | ~830x    |
+| Range query (>=,<=)| ~888,333ns   | ~3,250ns      | ~273x    |
 
 
 ---
