@@ -206,22 +206,4 @@ Range query - Full scan: ~888,333ns   | B+ tree range: ~3,250ns
 All tests on 10,000 rows, Java nanoTime measurements.
 
 
----
-
-
-## Day 9
-### What I built
-
-
-### What confused me
-- 
-
-### How I resolved it
-
-
-### Performance notes
-
-
-
----
 
