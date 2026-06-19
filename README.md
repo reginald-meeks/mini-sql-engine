@@ -158,9 +158,9 @@ The books are the data. Everything else is the database engine. That's what
 I built.
 
 I also found unexpected connections to my coursework — the SQL parser follows
-the same tokenization patterns covered in Crafting Interpreters (CS class), and
-the indexing strategies directly extended what I learned in Database Systems
-(CS4350). This project was where those concepts stopped being academic and
+the same tokenization patterns covered in Crafting Interpreters (R. Nystrom), and
+the indexing strategies directly extended what I learned in a Database Systems course. 
+This project was where those concepts stopped being academic and
 started making sense.
 
 ---
