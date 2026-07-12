@@ -3,6 +3,7 @@ package storage.index;
 import storage.Row;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class BPlusTree {
     private BPlusTreeNode root;
@@ -14,7 +15,8 @@ public class BPlusTree {
     }
 
     public void insert(Object key, Row row) {
-        BPlusTreeNode leaf = findLeaf(key);
+        Helper helper = findLeaf(key);
+        BPlusTreeNode leaf = helper.leaf;
         int i = 0;
         while (i < leaf.keys.size() && ((Comparable) key).compareTo(leaf.keys.get(i)) > 0) {
             i++;
@@ -33,8 +35,6 @@ public class BPlusTree {
 
             }
         }
-
-
     }
 
     public ArrayList<Row> search(Object key) {
@@ -64,16 +64,18 @@ public class BPlusTree {
         return results;
     }
 
-    private BPlusTreeNode findLeaf(Object key) {
+    private Helper findLeaf(Object key) {
+        Stack<BPlusTreeNode> ancestry = new Stack<>();
         BPlusTreeNode current = root;
         while (!current.leaf) {
             int i = 0;
             while (i < current.keys.size() && ((Comparable) key).compareTo(current.keys.get(i)) >= 0) {
                 i++;
             }
+            ancestry.push(current);
             current = current.children.get(i);
         }
-        return current;
+        return new Helper(current, ancestry);
     }
 
     private BPlusTreeNode splitLeaf(BPlusTreeNode leaf) {
@@ -104,6 +106,16 @@ public class BPlusTree {
             keys = new ArrayList<>();
             children = new ArrayList<>();
             rows = new ArrayList<>();
+        }
+    }
+
+    private class Helper {
+        private BPlusTreeNode leaf;
+        private Stack<BPlusTreeNode> ancestry;
+
+        Helper(BPlusTreeNode leaf, Stack<BPlusTreeNode> ancestry) {
+            this.leaf = leaf;
+            this.ancestry = ancestry;
         }
     }
 }
