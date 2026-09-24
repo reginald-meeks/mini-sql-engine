@@ -44,7 +44,12 @@ public class Benchmark {
         System.out.println("-----------------------------------------------------");
         System.out.println("Full Scan Range: " + benchmarkRangeScan(table) + " ns");
         System.out.println("B+ Tree Range: " + benchmarkBPlusTreeRange(table) + " ns");
+        System.out.println("-----------------------------------------------------");
 
+        BPlusTree tree = new BPlusTree(4);
+        for (Row row : table.getRows()) tree.insert(row.getValue("AGE"), row);
+        System.out.println("search(50): " + tree.search(50).size() + " rows (should be 100)");
+        System.out.println("range(20,50): " + tree.rangeSearch(20, 50).size() + " rows (should be 3100)");
     }
 
     public static long benchmarkScan(Table table) {

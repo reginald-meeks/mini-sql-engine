@@ -9,12 +9,10 @@ Day 5: implement hash index and tests for executor and parser
 Day 6: implement B+Tree class with insert, search, and rangeSearch
 Day 7: implement REPL and INSERT
 Day 8: add benchmarks comparing full scan, hash index, and B+ tree
-Day 9:
-
-
+Day 9: readme update
+Day 10: add Helper class and ancestry tracking to findLeaf for B+ tree split propagation
 
 ---
-
 
 ## Day 1
 ### What I built
