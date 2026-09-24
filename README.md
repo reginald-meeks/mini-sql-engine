@@ -11,8 +11,9 @@ architecture of production databases like MySQL and PostgreSQL.
 The engine implements two indexing strategies: a Hash Index for O(1) exact
 match lookups, integrated into query execution, and a B+ Tree with linked-leaf
 range scans, implemented as a standalone structure. Benchmarks on 10,000 rows
-show the hash index performing ~830x faster than a full table scan for exact
-matches.
+show the hash index performing 500x+ faster than a full table scan for exact
+matches. The B+ tree supports exact and range lookups, with results verified
+against a full scan.
 
 ---
 
@@ -77,8 +78,10 @@ mini-sql-engine/
 │   └── test/java/
 │       ├── executor/
 │       │   └── ExecutorTest.java
-│       └── parser/
-│           └── ParserTest.java
+│       ├── parser/
+│       │   └── ParserTest.java
+│       └── storage/index/
+│           └── BPlusTreeTest.java   # correctness vs full scan: deep splits + duplicate keys
 └── pom.xml
 ```
 
@@ -96,17 +99,23 @@ mini-sql-engine/
   specific use case. Hash index gives O(1) exact lookups; B+ tree's sorted leaf
   linked list enables range scans without backtracking. The B+ tree is not yet
   wired into the executor, so range queries currently use a full scan.
+- **Split propagation with an ancestor stack:** During insert, the path from root
+  to leaf is recorded on a stack. When a node overflows, the split is pushed up
+  one parent at a time until a parent has room or a new root is created. Leaf
+  splits copy the separator key up (the leaf still holds that key's data);
+  internal splits move the middle key up (it's only routing information).
+- **Duplicate-aware search:** Searches descend to the leftmost leaf that could
+  hold the key, then walk the leaf chain, because rows sharing a key can span
+  several leaves.
 - **Immutable Column model:** Columns are defined once and never modified —
   consistent with how real database schemas work.
 
 ### Known Limitations
-- B+ tree split only handles the root node — non-root leaf splits do not
-  propagate up to parent nodes, and duplicate keys that span multiple leaves
-  are not handled. Checking the original benchmark's result counts against a
-  full scan showed the tree returning 0 rows for both the exact-match and range
-  queries (expected 100 and 3,100), so the B+ tree benchmark has been removed
-  pending the fix. Ancestor tracking for the fix is implemented;
-  internal-node splitting is in progress.
+- The original B+ tree only handled root splits and single-leaf duplicate
+  lookups. Checking its benchmark's result counts against a full scan showed it
+  returning 0 rows (expected 100 and 3,100), so the original ~273x figure was
+  invalid. Split propagation and duplicate handling are now implemented and
+  covered by `BPlusTreeTest`; the benchmark was re-run on the fixed tree.
 - The B+ tree is not integrated into the executor; only the hash index is used
   during query execution.
 - The planner is currently a pass-through; index selection happens in the executor.
@@ -121,13 +130,20 @@ mini-sql-engine/
 ---
 
 ## Benchmark Results
-| Operation          | Full Scan    | Hash Index    | Speedup  |
-|--------------------|--------------|---------------|----------|
-| Exact match (=)    | ~2,075,959ns | ~2,500ns      | ~830x    |
+| Operation            | Full Scan    | Index                  | Speedup |
+|----------------------|--------------|------------------------|---------|
+| Exact match (=)      | ~1,218,625ns | ~2,167ns (hash)        | ~560x   |
+| Exact match (=)      | ~1,218,625ns | ~34,292ns (B+ tree)    | ~36x    |
+| Range query (20–50)  | ~1,075,833ns | ~489,917ns (B+ tree)   | ~2.2x   |
+
+An earlier run measured the hash index at ~830x; single runs vary.
 
 Measured on 10,000 rows with single-run `System.nanoTime()` timings — directional,
-not statistically rigorous. B+ tree results pending the split-propagation fix
-(see Known Limitations).
+not statistically rigorous. The range query returns 3,100 rows (31% of the
+table), so the B+ tree still has to walk hundreds of small leaves (order 4),
+following a pointer from each leaf to the next, while the full scan reads one
+contiguous list. Indexes pay off most when a query touches a small fraction of
+rows. Result counts are checked against a full scan on every benchmark run.
 
 ---
 
@@ -159,7 +175,7 @@ an executor decides which path to take, how an index transforms a linear scan in
 a constant-time lookup.
 
 The performance numbers surprised me. Before benchmarking, I understood
-intellectually that O(1) is faster than O(n). Seeing a hash index run 830x
+intellectually that O(1) is faster than O(n). Seeing a hash index run hundreds of times
 faster than a full scan on 10,000 rows made that real in a way that no lecture
 could.
 
@@ -178,8 +194,6 @@ started making sense.
 ---
 
 ## Future Features
-- Recursive B+ tree splitting for non-root nodes, with duplicate-key handling
-  and a correctness test against full-scan results
 - Integrate the B+ tree into the executor for range queries (`>=`, `<=`, `BETWEEN`)
 - CREATE TABLE and DROP TABLE SQL support
 - Persistent storage via file serialization
