@@ -38,7 +38,7 @@ public class BPlusTree {
     }
 
     public ArrayList<Row> search(Object key) {
-        BPlusTreeNode target = findLeaf(key);
+        BPlusTreeNode target = findLeaf(key).leaf;
         ArrayList<Row> results = new ArrayList<>();
         for (int i = 0; i < target.keys.size(); i++) {
             if (key.equals(target.keys.get(i))) {
@@ -50,7 +50,7 @@ public class BPlusTree {
 
     public ArrayList<Row> rangeSearch(Object fromKey, Object toKey) {
         ArrayList<Row> results = new ArrayList<>();
-        BPlusTreeNode current = findLeaf(fromKey);
+        BPlusTreeNode current = findLeaf(fromKey).leaf;
         while (current != null) {
             for (int i = 0; i < current.keys.size(); i++) {
                 if (((Comparable) current.keys.get(i)).compareTo(fromKey) >= 0 && ((Comparable) current.keys.get(i)).compareTo(toKey) <= 0) {
